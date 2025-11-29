@@ -5,7 +5,8 @@ const firebaseConfig = {
     projectId: "forestfoundry",
     storageBucket: "forestfoundry.firebasestorage.app",
     messagingSenderId: "670933705692",
-    appId: "1:670933705692:web:e1e556bec215e23b80e519"
+    appId: "1:670933705692:web:e1e556bec215e23b80e519",
+    measurementId: "G-7MB72KP89G"
 };
 
 // Initialize Firebase
@@ -128,7 +129,7 @@ function loadProjects() {
     projectList.innerHTML = '<div class="loading">Loading...</div>';
 
     db.collection('projects').where("uid", "==", user.uid)
-        .orderBy("createdAt", "desc")
+        // .orderBy("createdAt", "desc") // Requires index
         .get()
         .then((querySnapshot) => {
             projectList.innerHTML = '';
@@ -188,7 +189,7 @@ function loadAssets() {
 
     // Note: This query might also need an index!
     db.collection('assets').where("uid", "==", user.uid)
-        .orderBy("createdAt", "desc")
+        // .orderBy("createdAt", "desc") // Requires index
         .get()
         .then((snapshot) => {
             assetList.innerHTML = '';
@@ -261,7 +262,8 @@ function loadLore() {
         query = query.where("type", "==", currentLoreFilter);
     }
 
-    query.orderBy("createdAt", "desc")
+    query
+        // .orderBy("createdAt", "desc") // Requires index
         .get()
         .then((snapshot) => {
             loreList.innerHTML = '';
