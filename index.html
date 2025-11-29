@@ -5,64 +5,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Forest Foundry</title>
-  <aside id="sidebar">
-    <div class="logo-area">
-      <h1>FOREST<br>FOUNDRY</h1>
-    </div>
-    <nav>
-      <button class="nav-btn active" data-tab="dashboard">
-        <i data-lucide="layout-dashboard"></i> Dashboard
-      </button>
-      <button class="nav-btn" data-tab="workshop">
-        <i data-lucide="hammer"></i> The Workshop
-      </button>
-      <button class="nav-btn" data-tab="foundry">
-        <i data-lucide="clapperboard"></i> Forest Foundry
-      </button>
-      <button class="nav-btn" data-tab="myr">
-        <i data-lucide="gamepad-2"></i> Myr Ent.
-      </button>
-      <button class="nav-btn" data-tab="archive">
-        <i data-lucide="scroll-text"></i> The Archive
-      </button>
-    </nav>
-    <div class="user-area">
-      <div id="user-info" style="display: none;">
-        <span id="user-email"></span>
-        <button id="logout-btn">Log Out</button>
-      </div>
-      <div id="login-area">
-        <button id="login-modal-btn">Log In</button>
-      </div>
-    </div>
-  </aside>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Firebase SDKs (Compat for simplicity in vanilla JS) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+</head>
 
-  <!-- Main Content -->
-  <main id="main-content">
+<body>
 
-    <!-- Dashboard Section -->
-    <section id="dashboard" class="tab-content active">
-      <h2>Dashboard</h2>
-      <div class="grid-container">
-        <div class="card">
-          <h3>Welcome</h3>
-          <p>Welcome to the digital heart of the Forest Foundry.</p>
+  <div id="app-container">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="logo-area">
+        <h1>FOREST<br>FOUNDRY</h1>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-tab="dashboard">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </button>
+        <button class="nav-btn" data-tab="workshop">
+          <i data-lucide="hammer"></i> The Workshop
+        </button>
+        <button class="nav-btn" data-tab="foundry">
+          <i data-lucide="clapperboard"></i> Forest Foundry
+        </button>
+        <button class="nav-btn" data-tab="myr">
+          <i data-lucide="gamepad-2"></i> Myr Ent.
+        </button>
+        <button class="nav-btn" data-tab="archive">
+          <i data-lucide="scroll-text"></i> The Archive
+        </button>
+      </nav>
+      <div class="user-area">
+        <div id="user-info" style="display: none;">
+          <span id="user-email"></span>
+          <button id="logout-btn">Log Out</button>
+        </div>
+        <div id="login-area">
+          <button id="login-modal-btn">Log In</button>
         </div>
       </div>
-    </section>
+    </aside>
 
-    <!-- Workshop Section -->
-    <section id="workshop" class="tab-content">
-      <div class="section-header">
-        <h2>The Workshop</h2>
-        <button class="action-btn" onclick="openModal('project-modal')">+ New Project</button>
-      </div>
-      <div id="project-list" class="grid-container">
-        <!-- Projects will be loaded here -->
-        <div class="loading">Loading projects...</div>
-      </div>
-    </section>
+    <!-- Main Content -->
+    <main id="main-content">
 
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="tab-content active">
+        <h2>Dashboard</h2>
+        <div class="grid-container">
+          <div class="card">
+            <h3>Welcome</h3>
+            <p>Welcome to the digital heart of the Forest Foundry.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workshop Section -->
+      <section id="workshop" class="tab-content">
+        <div class="section-header">
+          <h2>The Workshop</h2>
+          <button class="action-btn" onclick="openModal('project-modal')">+ New Project</button>
+        </div>
+        <div id="project-list" class="grid-container">
+          <!-- Projects will be loaded here -->
+          <div class="loading">Loading projects...</div>
+        </div>
+      </section>
+
+      <!-- Foundry Section -->
+      <section id="foundry" class="tab-content">
+        <h2>Forest Foundry</h2>
+        <p>Media & Business Management</p>
+      </section>
+
+      <!-- Myr Section -->
+      <section id="myr" class="tab-content">
+        <div class="section-header">
+          <h2>Myr Entertainment</h2>
+          <button class="action-btn" onclick="openModal('asset-modal')">+ New Asset</button>
+        </div>
+        <div id="asset-list" class="grid-container">
+          <div class="loading">Loading assets...</div>
+        </div>
+      </section>
+
+      <!-- Archive Section -->
+      <section id="archive" class="tab-content">
+        <div class="section-header">
+          <h2>The Archive</h2>
+          <button class="action-btn" onclick="openModal('lore-modal')">+ New Lore Entry</button>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterLore('All')">All</button>
+          <button class="filter-btn" onclick="filterLore('Character')">Characters</button>
+          <button class="filter-btn" onclick="filterLore('Location')">Locations</button>
+          <button class="filter-btn" onclick="filterLore('Item')">Items</button>
+        </div>
+        <div id="lore-list" class="grid-container">
+          <div class="loading">Loading lore...</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
       <h2>Enter The Foundry</h2>
@@ -73,79 +126,81 @@
       </form>
       <p id="login-error" class="error-msg"></p>
     </div>
-    </div>
+  </div>
 
-    <!-- New Project Modal -->
-    <div id="project-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('project-modal')">&times;</span>
-        <h2>New Project</h2>
-        <form id="project-form">
-          <input type="text" id="project-title" placeholder="Project Title" required>
-          <select id="project-category">
-            <option value="Cosplay">Cosplay</option>
-            <option value="Prop">Prop</option>
-            <option value="Art">Art</option>
-          </select>
-          <button type="submit">Create Project</button>
-        </form>
-      </div>
+  <!-- New Project Modal -->
+  <div id="project-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('project-modal')">&times;</span>
+      <h2>New Project</h2>
+      <form id="project-form">
+        <input type="text" id="project-title" placeholder="Project Title" required>
+        <select id="project-category">
+          <option value="Cosplay">Cosplay</option>
+          <option value="Prop">Prop</option>
+          <option value="Art">Art</option>
+        </select>
+        <button type="submit">Create Project</button>
+      </form>
     </div>
+  </div>
 
-    <!-- New Asset Modal -->
-    <div id="asset-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('asset-modal')">&times;</span>
-        <h2>New Game Asset</h2>
-        <form id="asset-form">
-          <input type="text" id="asset-name" placeholder="Asset Name (e.g., Player Model)" required>
-          <select id="asset-type">
-            <option value="3D Model">3D Model</option>
-            <option value="Sprite">2D Sprite</option>
-            <option value="Audio">Audio</option>
-            <option value="Script">Script</option>
-          </select>
-          <select id="asset-status">
-            <option value="Concept">Concept</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Ready">Ready</option>
-          </select>
-          <button type="submit">Add Asset</button>
-        </form>
-      </div>
+  <!-- New Asset Modal -->
+  <div id="asset-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('asset-modal')">&times;</span>
+      <h2>New Game Asset</h2>
+      <form id="asset-form">
+        <input type="text" id="asset-name" placeholder="Asset Name (e.g., Player Model)" required>
+        <select id="asset-type">
+          <option value="3D Model">3D Model</option>
+          <option value="Sprite">2D Sprite</option>
+          <option value="Audio">Audio</option>
+          <option value="Script">Script</option>
+        </select>
+        <select id="asset-status">
+          <option value="Concept">Concept</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Ready">Ready</option>
+        </select>
+        <button type="submit">Add Asset</button>
+      </form>
     </div>
+  </div>
 
-    <!-- New Lore Modal -->
-    <div id="lore-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('lore-modal')">&times;</span>
-        <h2>New Lore Entry</h2>
-        <form id="lore-form">
-          <input type="text" id="lore-title" placeholder="Title (e.g., Alastor)" required>
-          <select id="lore-type">
-            <option value="Character">Character</option>
-            <option value="Location">Location</option>
-            <option value="Item">Item</option>
-            <option value="History">History</option>
-          </select>
-          <textarea id="lore-content" placeholder="Write the lore here..." rows="5"
-            style="width: 100%; background: var(--charcoal-900); color: var(--parchment); border: 1px solid var(--forest-800); padding: 0.5rem; margin-bottom: 1rem;"></textarea>
-          <input type="text" id="lore-image-url" placeholder="Image URL (Paste a link for now)">
-          <button type="submit">Save to Archive</button>
-        </form>
-      </div>
+  <!-- New Lore Modal -->
+  <div id="lore-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('lore-modal')">&times;</span>
+      <h2>New Lore Entry</h2>
+      <form id="lore-form">
+        <input type="text" id="lore-title" placeholder="Title (e.g., Alastor)" required>
+        <select id="lore-type">
+          <option value="Character">Character</option>
+          <option value="Location">Location</option>
+          <option value="Item">Item</option>
+          <option value="History">History</option>
+        </select>
+        <textarea id="lore-content" placeholder="Write the lore here..." rows="5"
+          style="width: 100%; background: var(--charcoal-900); color: var(--parchment); border: 1px solid var(--forest-800); padding: 0.5rem; margin-bottom: 1rem;"></textarea>
+        <input type="text" id="lore-image-url" placeholder="Image URL (Paste a link for now)">
+        <button type="submit">Save to Archive</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Lore Detail Modal -->
-    <div id="lore-detail-modal" class="modal">
-      <div class="modal-content" style="width: 600px; max-width: 90%;">
-        <span class="close-btn" onclick="closeModal('lore-detail-modal')">&times;</span>
-        <div id="lore-detail-content"></div>
-      </div>
+  <!-- Lore Detail Modal -->
+  <div id="lore-detail-modal" class="modal">
+    <div class="modal-content" style="width: 600px; max-width: 90%;">
+      <span class="close-btn" onclick="closeModal('lore-detail-modal')">&times;</span>
+      <div id="lore-detail-content"></div>
     </div>
-    <script>
-      lucide.createIcons();
-    </script>
-    </body>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
 
 </html>
