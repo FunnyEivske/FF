@@ -4,16 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Forest Foundry</title>
+  <title>Forest Foundry Wiki</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=Lato:wght@400;700&display=swap"
     rel="stylesheet">
-  <!-- Firebase SDKs (Compat for simplicity in vanilla JS) -->
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -23,35 +22,43 @@
 <body>
 
   <div id="app-container">
-    <!-- Sidebar -->
+    <!-- Wiki Sidebar -->
     <aside id="sidebar">
       <div class="logo-area">
         <h1>FOREST<br>FOUNDRY</h1>
+        <div class="wiki-badge">WIKI</div>
       </div>
       <nav>
-        <button class="nav-btn active" data-tab="dashboard">
-          <i data-lucide="layout-dashboard"></i> Dashboard
+        <button class="nav-btn active" onclick="router.navigate('home')">
+          <i data-lucide="home"></i> Home
         </button>
-        <button class="nav-btn" data-tab="workshop">
-          <i data-lucide="hammer"></i> The Workshop
+        <div class="nav-divider">Categories</div>
+        <button class="nav-btn" onclick="router.navigate('category', 'Characters')">
+          <i data-lucide="users"></i> Characters
         </button>
-        <button class="nav-btn" data-tab="foundry">
-          <i data-lucide="clapperboard"></i> Forest Foundry
+        <button class="nav-btn" onclick="router.navigate('category', 'Locations')">
+          <i data-lucide="map"></i> Locations
         </button>
-        <button class="nav-btn" data-tab="myr">
-          <i data-lucide="gamepad-2"></i> Myr Ent.
+        <button class="nav-btn" onclick="router.navigate('category', 'Items')">
+          <i data-lucide="sword"></i> Items
         </button>
-        <button class="nav-btn" data-tab="archive">
-          <i data-lucide="scroll-text"></i> The Archive
+        <button class="nav-btn" onclick="router.navigate('category', 'Lore')">
+          <i data-lucide="scroll"></i> Lore
+        </button>
+
+        <div class="nav-divider">Actions</div>
+        <button class="nav-btn" onclick="router.createPage()">
+          <i data-lucide="plus-circle"></i> New Page
         </button>
       </nav>
+
       <div class="user-area">
         <div id="user-info" style="display: none;">
           <span id="user-email"></span>
           <button id="logout-btn">Log Out</button>
         </div>
         <div id="login-area">
-          <button id="login-modal-btn">Log In</button>
+          <button id="login-modal-btn">Log In to Edit</button>
         </div>
       </div>
     </aside>
@@ -59,62 +66,122 @@
     <!-- Main Content -->
     <main id="main-content">
 
-      <!-- Dashboard Section -->
-      <section id="dashboard" class="tab-content active">
-        <h2>Dashboard</h2>
-        <div class="grid-container">
-          <div class="card">
-            <form id="asset-form">
-              <input type="text" id="asset-name" placeholder="Asset Name (e.g., Player Model)" required>
-              <select id="asset-type">
-                <option value="3D Model">3D Model</option>
-                <option value="Sprite">2D Sprite</option>
-                <option value="Audio">Audio</option>
-                <option value="Script">Script</option>
-              </select>
-              <select id="asset-status">
-                <option value="Concept">Concept</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Ready">Ready</option>
-              </select>
-              <button type="submit">Add Asset</button>
-            </form>
-          </div>
+      <!-- Home View -->
+      <section id="view-home" class="view-section active">
+        <div class="hero-banner">
+          <h2>Welcome to the Forest Foundry Wiki</h2>
+          <p>The definitive source for all lore, characters, and items.</p>
         </div>
 
-        <!-- New Lore Modal -->
-        <div id="lore-modal" class="modal">
-          <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('lore-modal')">&times;</span>
-            <h2>New Lore Entry</h2>
-            <form id="lore-form">
-              <input type="text" id="lore-title" placeholder="Title (e.g., Alastor)" required>
-              <select id="lore-type">
-                <option value="Character">Character</option>
-                <option value="Location">Location</option>
-                <option value="Item">Item</option>
-                <option value="History">History</option>
-              </select>
-              <textarea id="lore-content" placeholder="Write the lore here..." rows="5"
-                style="width: 100%; background: var(--charcoal-900); color: var(--parchment); border: 1px solid var(--forest-800); padding: 0.5rem; margin-bottom: 1rem;"></textarea>
-              <input type="text" id="lore-image-url" placeholder="Image URL (Paste a link for now)">
-              <button type="submit">Save to Archive</button>
-            </form>
+        <div class="content-grid">
+          <div class="main-column">
+            <h3><i data-lucide="star"></i> Featured Pages</h3>
+            <div id="featured-list" class="card-grid">
+              <!-- Featured pages loaded here -->
+              <div class="loading">Loading featured...</div>
+            </div>
+          </div>
+          <div class="side-column">
+            <h3><i data-lucide="clock"></i> Recent Changes</h3>
+            <div id="recent-list" class="list-group">
+              <!-- Recent changes loaded here -->
+            </div>
           </div>
         </div>
+      </section>
 
-        <!-- Lore Detail Modal -->
-        <div id="lore-detail-modal" class="modal">
-          <div class="modal-content" style="width: 600px; max-width: 90%;">
-            <span class="close-btn" onclick="closeModal('lore-detail-modal')">&times;</span>
-            <div id="lore-detail-content"></div>
+      <!-- Category View -->
+      <section id="view-category" class="view-section">
+        <h2 id="category-title">Category Name</h2>
+        <div id="category-list" class="card-grid"></div>
+      </section>
+
+      <!-- Page View (Fandom Style) -->
+      <section id="view-page" class="view-section">
+        <div class="wiki-article">
+          <div class="wiki-header">
+            <h1 id="page-title">Page Title</h1>
+            <div class="wiki-actions">
+              <button class="action-btn secondary" id="edit-page-btn"><i data-lucide="edit"></i> Edit</button>
+            </div>
+          </div>
+
+          <div class="wiki-body-layout">
+            <div class="wiki-text-content" id="page-content">
+              <!-- Content goes here -->
+            </div>
+
+            <aside class="wiki-infobox" id="page-infobox">
+              <div class="infobox-header" id="infobox-title">Title</div>
+              <img id="infobox-image" src="" alt="Wiki Image">
+              <div class="infobox-data" id="infobox-data">
+                <!-- Key/Value pairs -->
+              </div>
+            </aside>
           </div>
         </div>
+      </section>
 
-        <script src="app.js"></script>
-        <script>
-          lucide.createIcons();
-        </script>
+      <!-- Editor View -->
+      <section id="view-edit" class="view-section">
+        <h2>Edit Page</h2>
+        <form id="edit-form">
+          <div class="form-group">
+            <label>Page Title</label>
+            <input type="text" id="edit-title" required>
+          </div>
+
+          <div class="form-group">
+            <label>Category</label>
+            <select id="edit-category">
+              <option value="Characters">Characters</option>
+              <option value="Locations">Locations</option>
+              <option value="Items">Items</option>
+              <option value="Lore">Lore</option>
+            </select>
+          </div>
+
+          <div class="editor-layout">
+            <div class="main-editor">
+              <label>Content (HTML/Markdown supported)</label>
+              <textarea id="edit-content" rows="20"></textarea>
+            </div>
+            <div class="infobox-editor">
+              <label>Infobox Image URL</label>
+              <input type="text" id="edit-image-url">
+
+              <label>Infobox Data (JSON Format for now)</label>
+              <textarea id="edit-infobox-data" rows="10" placeholder='{"Type": "NPC", "Location": "Forest"}'></textarea>
+              <p class="hint">Enter key-value pairs as JSON.</p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="action-btn">Save Page</button>
+            <button type="button" class="action-btn secondary" onclick="router.back()">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
+      <h2>Login to Edit</h2>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Log In</button>
+      </form>
+      <p id="login-error" class="error-msg"></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 
 </html>
