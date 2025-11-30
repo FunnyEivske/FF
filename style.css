@@ -222,14 +222,58 @@ h3 {
     line-height: 1.8;
 }
 
-.wiki-text-content h2 {
+.wiki-text-content h1,
+.wiki-text-content h2,
+.wiki-text-content h3 {
     color: var(--wiki-blue);
-    margin-top: 2rem;
-    border-bottom: 1px solid var(--border-color);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .wiki-text-content p {
     margin-bottom: 1rem;
+}
+
+.wiki-text-content ul,
+.wiki-text-content ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Table of Contents */
+.wiki-toc {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    min-width: 200px;
+}
+
+.wiki-toc h4 {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.25rem;
+}
+
+.wiki-toc ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.wiki-toc li {
+    margin-bottom: 0.25rem;
+}
+
+.wiki-toc a {
+    color: var(--wiki-blue);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.wiki-toc a:hover {
+    text-decoration: underline;
 }
 
 /* Infobox */
@@ -308,6 +352,32 @@ textarea {
     font-size: 0.8rem;
     color: var(--text-muted-color);
     margin-top: 0.5rem;
+}
+
+/* Quill Dark Mode Overrides */
+.ql-toolbar {
+    background: #2a2d33;
+    border-color: var(--border-color) !important;
+}
+
+.ql-container {
+    background: #121416;
+    border-color: var(--border-color) !important;
+    color: var(--text-color);
+    font-family: var(--font-body);
+    font-size: 1rem;
+}
+
+.ql-stroke {
+    stroke: var(--text-color) !important;
+}
+
+.ql-fill {
+    fill: var(--text-color) !important;
+}
+
+.ql-picker {
+    color: var(--text-color) !important;
 }
 
 /* Buttons */

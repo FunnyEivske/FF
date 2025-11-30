@@ -14,6 +14,24 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// --- QUILL EDITOR INIT ---
+let quill;
+document.addEventListener('DOMContentLoaded', () => {
+    quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'color': [] }, { 'background': [] }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+});
+
 // --- ROUTER & NAVIGATION ---
 const router = {
     currentPageId: null,
@@ -147,14 +165,41 @@ const router = {
             // Header
             document.getElementById('page-title').textContent = page.title;
 
-            // Content (Simple Markdown-ish to HTML)
-            // Replace newlines with <br>, **text** with <b>
-            let htmlContent = page.content
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-                .replace(/## (.*?)(<br>|$)/g, '<h2>$1</h2>');
+            // Content (HTML from Quill)
+            contentDiv.innerHTML = page.content;
 
-            contentDiv.innerHTML = htmlContent;
+            // --- TABLE OF CONTENTS GENERATOR ---
+            const headers = contentDiv.querySelectorAll('h1, h2, h3');
+            if (headers.length > 0) {
+                const tocDiv = document.createElement('div');
+                tocDiv.className = 'wiki-toc';
+                tocDiv.innerHTML = '<h4>Contents</h4>';
+                const ul = document.createElement('ul');
+
+                headers.forEach((header, index) => {
+                    // Create ID for header if missing
+                    if (!header.id) header.id = 'wiki-header-' + index;
+
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = '#' + header.id;
+                    a.textContent = header.textContent;
+                    a.onclick = (e) => {
+                        e.preventDefault();
+                        header.scrollIntoView({ behavior: 'smooth' });
+                    };
+
+                    // Indent based on level
+                    const level = parseInt(header.tagName.substring(1));
+                    li.style.marginLeft = (level - 1) * 10 + 'px';
+
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                });
+
+                tocDiv.appendChild(ul);
+                contentDiv.insertBefore(tocDiv, contentDiv.firstChild);
+            }
 
             // Infobox
             document.getElementById('infobox-title').textContent = page.title;
@@ -202,7 +247,10 @@ const router = {
                 const page = doc.data();
                 document.getElementById('edit-title').value = page.title;
                 document.getElementById('edit-category').value = page.category;
-                document.getElementById('edit-content').value = page.content;
+
+                // Set Quill Content
+                if (quill) quill.root.innerHTML = page.content;
+
                 document.getElementById('edit-image-url').value = page.imageUrl || '';
                 document.getElementById('edit-infobox-data').value = JSON.stringify(page.infobox || {}, null, 2);
 
@@ -210,6 +258,7 @@ const router = {
             });
         } else {
             // New Page
+            if (quill) quill.setText(''); // Clear Quill
             form.onsubmit = (e) => this.savePage(e, null);
         }
     },
@@ -219,7 +268,10 @@ const router = {
 
         const title = document.getElementById('edit-title').value;
         const category = document.getElementById('edit-category').value;
-        const content = document.getElementById('edit-content').value;
+
+        // Get Content from Quill
+        const content = quill.root.innerHTML;
+
         const imageUrl = document.getElementById('edit-image-url').value;
         let infobox = {};
 
